@@ -13,15 +13,14 @@ namespace node {
 namespace Buffer {
 
 	using v8::ArrayBuffer;
+  #if NODE_MODULE_VERSION <= NODE_16_0_MODULE_VERSION
 	using v8::ArrayBufferCreationMode;
+  #endif
 	using v8::EscapableHandleScope;
 	using v8::Isolate;
 	using v8::Local;
 	using v8::MaybeLocal;
 	using v8::Object;
-	using v8::Integer;
-	using v8::Maybe;
-	using v8::String;
 	using v8::Value;
 	using v8::Int8Array;
 	using v8::Uint8Array;
@@ -32,7 +31,6 @@ namespace Buffer {
 	using v8::Uint32Array;
 	using v8::Float32Array;
 	using v8::Float64Array;
-
 
 	MaybeLocal<Object> NewTyped(
 		Isolate* isolate,
@@ -150,7 +148,9 @@ namespace Nan {
 namespace node {
 namespace node_shm {
 
+  #if NODE_MODULE_VERSION < NODE_16_0_MODULE_VERSION
 	using node::AtExit;
+  #endif
 	using v8::Local;
 	using v8::Number;
 	using v8::Object;
@@ -171,11 +171,7 @@ namespace node_shm {
 	static bool hasShmSegmentInfo(int resId);
 	static bool removeShmSegmentInfo(int resId);
 	static void FreeCallback(char* data, void* hint);
-  #if NODE_MODULE_VERSION < NODE_16_0_MODULE_VERSION
 	static void Init(Local<Object> target);
-  #else
-	static void Init(Local<Object> target, Local<Value> module, void* priv);
-  #endif
 	static void AtNodeExit(void*);
 
 
@@ -415,11 +411,7 @@ namespace node_shm {
 	}
 
 	// Init module
-  #if NODE_MODULE_VERSION < NODE_16_0_MODULE_VERSION
 	static void Init(Local<Object> target) {
-  #else
-	static void Init(Local<Object> target, Local<Value> module, void* priv) {
-  #endif
 		initShmSegmentsInfo();
 
 		Nan::SetMethod(target, "get", get);
@@ -456,4 +448,4 @@ namespace node_shm {
 
 //-------------------------------
 
-NODE_MODULE(shm, node::node_shm::Init);
+NAN_MODULE_WORKER_ENABLED(shm, node::node_shm::Init);
